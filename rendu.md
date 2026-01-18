@@ -89,10 +89,10 @@ subgraph LEG["Légende"]
 end
 ```
 ![diag1](./mermaidDiagArch.png)
-////legende et faire un cadre
+
 # _Représenter les acteurs et le système sous forme de diagrammes de UCs_
 
-```mermaid
+```plantuml
 @startuml
 left to right direction
 skinparam packageStyle rectangle
