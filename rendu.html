@@ -1,0 +1,408 @@
+<h1
+id="déterminer-les-acteurs-et-décrire-leurs-rôles-respectifs."><em>Déterminer
+les acteurs et décrire leurs rôles respectifs.</em></h1>
+<h2 id="acteurs-internes-utilisateurs-du-système">Acteurs internes
+(utilisateurs du système)</h2>
+<ul>
+<li><strong>Opérateurs colis</strong> :Ils traitent manuellement les
+courriers reçus, gèrent les clients, les commandes, le conditionnement,
+l’envoi d’emails personnalisés et les statistiques</li>
+<li><strong>Opérateurs stock</strong> : Ils sont chargés de la gestion
+des stocks de « goodies » (cadeaux) et de la réalisation des
+inventaires</li>
+<li><strong>Administrateur du système</strong> : Il est responsable du
+paramétrage de l’application. Ses tâches incluent la gestion des listes
+d’emballages, la configuration des données pour le calcul des frais
+d’affranchissement et la mise à jour des poids des articles</li>
+</ul>
+<h2 id="acteurs-externes-utilisateurs-du-système">Acteurs externes
+(utilisateurs du système)</h2>
+<ul>
+<li><strong>Client final (particulier)</strong> : Il initie le processus
+en collectant les points de fidélité sur les emballages, en consultant
+le site vitrine pour choisir ses cadeaux et en envoyant sa demande
+(points, chèque, choix des cadeaux) par courrier à la fromagerie</li>
+<li><strong>La Poste</strong> : Il s’agit du partenaire externe exclusif
+pour l’envoi des colis, il permet la gestion des tarifs.</li>
+<li><strong>Enseignes / Grands distributeurs</strong> : Dans le futur,
+il pourront etre utilisés pour les statistiques des ventes et le nombre
+de clients collectant des points.</li>
+</ul>
+<h1
+id="réaliser-un-schéma-global-de-larchitecture-du-système-acteurs-et-grandes-fonctionnalités-avec-les-interactions-des-acteurs."><em>Réaliser
+un schéma global de l’architecture du système (acteurs et grandes
+fonctionnalités) avec les interactions des acteurs.</em></h1>
+<h2 id="grandes-fonctionnalités">grandes fonctionnalités</h2>
+<ol type="1">
+<li>Gestion des clients</li>
+<li>Gestion des commandes &amp; colis</li>
+<li>Gestion du conditionnement &amp; affranchissement</li>
+<li>Gestion des stocks</li>
+<li>Administration du système</li>
+<li>Communication &amp; reporting</li>
+</ol>
+<h2 id="schéma">schéma</h2>
+<pre class="mermaid"><code>graph LR
+
+
+subgraph SYS[&quot;Gestion globale des colis&quot;]
+    direction LR
+
+    Cl(Client final)
+    OC(Opérateurs colis)
+    OS(Opérateurs stock)
+    Ad(Administrateur système)
+    LP(La Poste)
+    Di(Enseignes / Distributeurs)
+
+    GCC[**Gestion des clients et des commandes**
+    - Fiche client et listes
+    - Suivi des commandes
+    - Lettre suivie]
+    CL[**Conditionnement et affranchissement**
+    - Calcul d’affranchissement
+    - Algorithme de conditionnement
+    - Gestion des emballages]
+    CM[**Communication et marketing**
+    - Mailing et emails
+    - Newsletter]
+    StPi[**Statistiques et pilotage**
+    - Statistiques
+    - Impressions]
+    SuPa[**Fonctionnalités de support et paramétrage**
+    - Emplacements
+    - Administration]
+
+    Cl --&gt; GCC
+    Cl --&gt; CM
+
+    OC --&gt; GCC
+    OC --&gt; CL
+    OC --&gt; CM
+    OC --&gt; StPi
+
+    OS --&gt; CL
+    OS --&gt; SuPa
+
+    Ad --&gt; SuPa
+
+    CL --&gt; LP
+    Di --&gt; SuPa
+end
+
+
+classDef acteur fill:#E3F2FD,stroke:#1E88E5,stroke-width:2px;
+classDef fonction fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px;
+
+class Cl,OC,OS,Ad,LP,Di acteur;
+class GCC,CL,CM,StPi,SuPa fonction;
+
+
+subgraph LEG[&quot;Légende&quot;]
+    A[Acteur]:::acteur
+    F[Fonctionnalité du système]:::fonction
+end</code></pre>
+<p><img src="./mermaidDiagArch.png" alt="diag1" /> ////legende et faire
+un cadre # <em>Représenter les acteurs et le système sous forme de
+diagrammes de UCs</em></p>
+<pre class="mermaid"><code>@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor &quot;Client final&quot; as Client
+actor &quot;Opérateur colis&quot; as OpColis
+actor &quot;Opérateur stock&quot; as OpStock
+actor &quot;Administrateur&quot; as Admin
+actor &quot;La Poste&quot; as Poste
+
+rectangle &quot;Système de gestion de colis fidélité&quot; {
+
+  &#39; --- Client ---
+  usecase &quot;Commander des cadeaux\npar courrier&quot; as UC_Commande
+  usecase &quot;Recevoir des informations\n(client)&quot; as UC_Info
+
+  &#39; --- Commandes ---
+  usecase &quot;Traiter le courrier client&quot; as UC_Courrier
+  usecase &quot;Gérer les clients&quot; as UC_Client
+  usecase &quot;Gérer les commandes&quot; as UC_GCommande
+  usecase &quot;Conditionner les colis&quot; as UC_Cond
+  usecase &quot;Calculer l’affranchissement&quot; as UC_Aff
+  usecase &quot;Envoyer le colis&quot; as UC_Envoi
+  usecase &quot;Suivre le colis&quot; as UC_Suivi
+
+  &#39; --- Détails conditionnement ---
+  usecase &quot;Calculer le poids total\n(colis + objets)&quot; as UC_Poids
+  usecase &quot;Choisir l’emballage optimal&quot; as UC_Emballage
+
+  &#39; --- Stocks ---
+  usecase &quot;Gérer le stock de goodies&quot; as UC_Stock
+  usecase &quot;Réaliser les inventaires&quot; as UC_Inventaire
+
+  &#39; --- Communication ---
+  usecase &quot;Gérer la communication client&quot; as UC_Com
+  usecase &quot;Envoyer des emails\npersonnalisés&quot; as UC_Email
+  usecase &quot;Générer mailing papier&quot; as UC_Mail
+
+  &#39; --- Statistiques ---
+  usecase &quot;Consulter les statistiques&quot; as UC_Stats
+  usecase &quot;Imprimer documents&quot; as UC_Print
+  usecase &quot;Imprimer liste clients&quot; as UC_PrintClient
+  usecase &quot;Imprimer liste goodies&quot; as UC_PrintGoodies
+  usecase &quot;Imprimer commandes client&quot; as UC_PrintCmd
+  usecase &quot;Imprimer rapports statistiques&quot; as UC_PrintStats
+
+  &#39; --- Paramétrage ---
+  usecase &quot;Paramétrer le système&quot; as UC_Admin
+}
+
+Client --&gt; UC_Commande
+Client --&gt; UC_Info
+
+OpColis --&gt; UC_Courrier
+OpColis --&gt; UC_Client
+OpColis --&gt; UC_GCommande
+OpColis --&gt; UC_Com
+OpColis --&gt; UC_Stats
+OpColis --&gt; UC_Print
+
+OpStock --&gt; UC_Stock
+OpStock --&gt; UC_Inventaire
+
+Admin --&gt; UC_Admin
+
+Poste --&gt; UC_Aff
+Poste --&gt; UC_Envoi
+Poste --&gt; UC_Suivi
+
+UC_GCommande --&gt; UC_Cond : &lt;&lt;include&gt;&gt;
+UC_GCommande --&gt; UC_Aff : &lt;&lt;include&gt;&gt;
+UC_GCommande --&gt; UC_Envoi : &lt;&lt;include&gt;&gt;
+UC_GCommande --&gt; UC_Suivi : &lt;&lt;include&gt;&gt;
+
+UC_Cond --&gt; UC_Poids : &lt;&lt;include&gt;&gt;
+UC_Cond --&gt; UC_Emballage : &lt;&lt;include&gt;&gt;
+
+UC_Com --&gt; UC_Email : &lt;&lt;extend&gt;&gt;
+UC_Com --&gt; UC_Mail : &lt;&lt;extend&gt;&gt;
+
+UC_Print --&gt; UC_PrintClient : &lt;&lt;extend&gt;&gt;
+UC_Print --&gt; UC_PrintGoodies : &lt;&lt;extend&gt;&gt;
+UC_Print --&gt; UC_PrintCmd : &lt;&lt;extend&gt;&gt;
+UC_Print --&gt; UC_PrintStats : &lt;&lt;extend&gt;&gt;
+
+@enduml</code></pre>
+<figure>
+<img src="./plantumlDiagUC.png" alt="diag2" />
+<figcaption aria-hidden="true">diag2</figcaption>
+</figure>
+<h1
+id="décrire-textuellement-le-scénario-de-la-gestion-des-colis-et-le-représenter-à-laide-des-diagrammes-de-séquence-et-dactivité.">Décrire
+(textuellement) le scénario de la gestion des colis et le représenter à
+l’aide des diagrammes de séquence et d’activité.</h1>
+<h2 id="description">Description</h2>
+<p>Le scénario de la gestion des colis au sein de la fromagerie
+DIGICHEESE suit un processus précis, allant de la réception de la
+demande du client jusqu’au suivi de l’expédition. Voici les étapes
+textuelles de ce scénario : 1. Initialisation par le client Le processus
+débute hors système : le client final collecte ses points de fidélité,
+choisit ses cadeaux (« goodies ») sur le site vitrine et envoie par
+courrier postal son dossier comprenant les points, le chèque de
+règlement des frais de port et sa liste de cadeaux . 2. Réception et
+Saisie de la commande À la réception du courrier, un opérateur colis
+traite la demande manuellement . Il utilise l’application pour : •
+Rechercher ou créer la fiche client (nom, adresse, code postal et ville
+sont obligatoires) . • Saisir la commande en sélectionnant les objets
+demandés par le client . 3. Détermination du conditionnement et calcul
+des frais Une fois les articles saisis, le système intervient pour la
+partie logistique : • Algorithme de conditionnement : L’application
+s’appuie sur un calcul complexe (utilisant les quantités minimales et
+maximales paramétrées par l’administrateur) pour identifier
+automatiquement le meilleur emballage adapté à la commande . • Calcul
+d’affranchissement : Le système calcule automatiquement le montant des
+frais de port en combinant le poids total (articles + emballage choisi)
+et les tarifs postaux de La Poste mis à jour annuellement . 4.
+Expédition et Suivi (Lettre Suivie) Le colis est ensuite confié à La
+Poste pour l’envoi physique . • Numéro de suivi : Au moment du dépôt, La
+Poste fournit un numéro de suivi . • Mise à jour du système :
+L’opérateur reporte manuellement ce numéro dans la zone « commentaires »
+de la commande dans l’application . 5. Communication et Clôture •
+Notification client : Si le client a renseigné une adresse électronique,
+l’opérateur déclenche manuellement l’envoi d’un email personnalisé . •
+Mailing papier : Pour les clients sans email, le système peut générer un
+fichier texte pour une procédure de mailing papier . • Historisation :
+Le mouvement du colis est enregistré dans l’historique des commandes, ce
+qui permet ultérieurement à la direction de consulter des statistiques
+d’activité .</p>
+<h2 id="diagramme-de-séquence">Diagramme de séquence</h2>
+<pre class="mermaid"><code>sequenceDiagram
+    actor Client
+    participant OpColis as Opérateur colis
+    participant Sys as Système
+    participant Stock as Stock goodies
+    participant Poste as La Poste
+
+    Client -&gt;&gt; OpColis: Envoi courrier (points + choix + chèque)
+    OpColis -&gt;&gt; Sys: Saisir client et commande
+
+    Sys -&gt;&gt; Sys: Vérifier points fidélité
+    alt Points suffisants
+        Sys -&gt;&gt; Stock: Vérifier disponibilité des goodies
+        alt Stock disponible
+            Sys -&gt;&gt; Sys: Calcul conditionnement
+            Sys -&gt;&gt; Sys: Calcul affranchissement
+            OpColis -&gt;&gt; Poste: Dépôt du colis
+            Poste --&gt;&gt; OpColis: Numéro de suivi
+            OpColis -&gt;&gt; Sys: Saisir numéro de suivi
+            
+            opt Client avec email
+                OpColis -&gt;&gt; System: Déclencher email
+                System --&gt;&gt; Client: Notification
+            end
+
+            Poste -&gt;&gt; Client: Livraison
+            
+        else Stock insuffisant
+            Sys -&gt;&gt; OpColis: Alerte stock insuffisant
+            OpColis -&gt;&gt; Sys: Mise en attente / action corrective
+        end
+    else Points insuffisants
+        Sys -&gt;&gt; OpColis: Alerte points insuffisants
+        OpColis -&gt;&gt; Sys: Rejet ou demande complément
+    end</code></pre>
+<figure>
+<img src="./mermaidDiagSeq.png" alt="diag3" />
+<figcaption aria-hidden="true">diag3</figcaption>
+</figure>
+<h2 id="diagramme-dactivité">Diagramme d’activité</h2>
+<pre class="mermaid"><code>stateDiagram-v2
+    [*] --&gt; EnvoiCourrier
+
+    EnvoiCourrier --&gt; ReceptionCourrier
+    ReceptionCourrier --&gt; SaisieCommande
+
+    SaisieCommande --&gt; VerifPoints
+
+    VerifPoints --&gt; PointsOK: points suffisants
+    VerifPoints --&gt; PointsKO: points insuffisants
+
+    PointsKO --&gt; ActionPoints
+    ActionPoints --&gt; [*]
+
+    PointsOK --&gt; VerifStock
+
+    VerifStock --&gt; StockOK: stock disponible
+    VerifStock --&gt; StockKO: stock insuffisant
+
+    StockKO --&gt; ActionStock
+    ActionStock --&gt; [*]
+
+    StockOK --&gt; Conditionnement
+    Conditionnement --&gt; CalculAffranchissement
+    CalculAffranchissement --&gt; DepotColis
+
+    DepotColis --&gt; NumeroSuivi
+    NumeroSuivi --&gt; SaisieSuivi
+
+    SaisieSuivi --&gt; DecisionEmail
+
+    DecisionEmail --&gt; EnvoiEmail: client avec email
+    DecisionEmail --&gt; FinTraitement : client sans email
+    
+    EnvoiEmail --&gt; FinTraitement
+    FinTraitement --&gt; [*]
+
+    state ActionPoints {
+        [*] --&gt; DemandeComplementPoints
+        DemandeComplementPoints --&gt; [*]
+    }
+
+    state ActionStock {
+        [*] --&gt; MiseEnAttente
+        MiseEnAttente --&gt; [*]
+    }</code></pre>
+<figure>
+<img src="./mermaidDiagAct.png" alt="diag4" />
+<figcaption aria-hidden="true">diag4</figcaption>
+</figure>
+<h1
+id="créer-le-diagramme-de-classe-permettant-de-réaliser-la-partie-gestion-des-colis-recueillir-les-data-nécessaires-pour-le-réaliser.">Créer
+le diagramme de classe permettant de réaliser la partie gestion des
+colis (recueillir les data nécessaires pour le réaliser).</h1>
+<pre class="mermaid"><code>classDiagram
+
+class Client {
+    idClient
+    nom
+    prenom
+    adresse1
+    adresse2
+    adresse3
+    codePostal
+    ville
+    email
+    tel
+    newsletter
+}
+
+class Commande {
+    idCommande
+    dateCommande
+    commentaire
+    archive
+}
+
+class Colis {
+    idColis
+    poidsTotal
+}
+
+class LigneCommande {
+    quantite
+}
+
+class Objet {
+    idObjet
+    libelle
+    poidsUnitaire
+    points
+    indisponible
+}
+
+class Conditionnement {
+    idConditionnement
+    libelle
+    poidsEmballage
+}
+
+class RegleConditionnement {
+    quantiteMin
+    quantiteMax
+}
+
+class TarifPostal {
+    poidsMin
+    montant
+}
+
+class Suivi {
+    numeroSuivi
+}
+
+class Enseigne {
+    idEnseigne
+    nom
+    ville
+}
+
+
+Client &quot;1&quot; --&gt; &quot;0..*&quot; Commande : passe
+Commande &quot;1&quot; --&gt; &quot;1&quot; Colis : génère
+Commande &quot;1&quot; --&gt; &quot;1..*&quot; LigneCommande
+LigneCommande &quot;1&quot; --&gt; &quot;1&quot; Objet
+
+Colis &quot;1&quot; --&gt; &quot;1&quot; Conditionnement : utilise
+Colis &quot;1&quot; --&gt; &quot;1&quot; TarifPostal : applique
+Colis &quot;1&quot; --&gt; &quot;0..1&quot; Suivi : possède
+
+Objet &quot;1&quot; --&gt; &quot;0..*&quot; RegleConditionnement
+Conditionnement &quot;1&quot; --&gt; &quot;0..*&quot; RegleConditionnement</code></pre>
