@@ -393,3 +393,4 @@ Colis "1" --> "0..1" Suivi : possède
 Objet "1" --> "0..*" RegleConditionnement
 Conditionnement "1" --> "0..*" RegleConditionnement
 ```
+![diag5](./mermaidDiagClass.png)
