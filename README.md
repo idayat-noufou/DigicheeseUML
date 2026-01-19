@@ -1,6 +1,10 @@
 # Projet : Conception d’une application avec UML
 Ce projet a pour but de pratiquer la modélisation UML à travers la réalisation de diagrammes et de documents associés. 
-Travail réalisé individuellement sur une durée de 3 jours.
+
+# Auteur
+Nom : Noufou
+Prénoms : Idayat Adel-Akou Bisola
+email : inoufou@diginamic-formation.fr
 
 ## 📂 Documents du projet
 - [Slides de présentation](./Digicheese_Conception_Application_UML.pdf)
